@@ -8,7 +8,7 @@ app = FastAPI()
 
 
 @app.get("/verifica_agencia/{agencia}")
-async def verificar_tamanho_agencia_e_conta(agencia:str):
+async def verifica_agencia(agencia:str):
     """Verifica se a quantidade de caracteres da agência e da conta está correta."""
     if len(agencia) != 4:
         return {'validacao':False,'Retorno': "Agência deve conter 4 digitos."}
@@ -40,4 +40,23 @@ async def verificar_tamanho_agencia_e_conta(agencia:str):
 
     else:
         return {"validacao":False,'retorno':'Agência inválida!'}
+    
+
+@app.get('/bancos')
+async def relacao_bancos():
+    ag = pd.read_excel('integrate/agencias.xlsx')
+
+    instituicoes = ag['NOME_INSTITUICAO']
+    def remover_espacos_extra(string):
+        return re.sub(r'\s+', ' ', string.strip())
+    lista = instituicoes.to_list()
+    lista_bancos = list()
+    for i in lista:
+        lista_bancos.append(remover_espacos_extra(str(i)))
+
+    retorno_lista = list(set(lista_bancos))
+    retorno_lista.sort()
+    retorno_lista.remove('nan')
+
+    return retorno_lista
 
