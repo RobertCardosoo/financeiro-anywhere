@@ -5,7 +5,10 @@ import pandas as pd
 import re
 
 app = FastAPI()
+ag = pd.read_excel('integrate/agencias.xlsx')
 
+def remover_espacos_extra(string):
+            return re.sub(r'\s+', ' ', string.strip())
 
 @app.get("/verifica_agencia/{agencia}")
 async def verifica_agencia(agencia:str):
@@ -13,13 +16,12 @@ async def verifica_agencia(agencia:str):
     if len(agencia) != 4:
         return {'validacao':False,'Retorno': "Agência deve conter 4 digitos."}
     
-    ag = pd.read_excel('integrate/agencias.xlsx')
+    
     agencias_cod = ag['COD_COMPE_AG']
     
     if int(agencia) in agencias_cod:
         # Função para remover espaços extras de uma string
-        def remover_espacos_extra(string):
-            return re.sub(r'\s+', ' ', string.strip())
+        
 
         # Encontrar o índice da linha onde o valor ocorre na coluna "COD_COMPE_AG"
         indice_linha = ag.index[ag['COD_COMPE_AG'] == int(agencia)]
@@ -44,11 +46,9 @@ async def verifica_agencia(agencia:str):
 
 @app.get('/bancos')
 async def relacao_bancos():
-    ag = pd.read_excel('integrate/agencias.xlsx')
 
     instituicoes = ag['NOME_INSTITUICAO']
-    def remover_espacos_extra(string):
-        return re.sub(r'\s+', ' ', string.strip())
+
     lista = instituicoes.to_list()
     lista_bancos = list()
     for i in lista:
@@ -60,3 +60,5 @@ async def relacao_bancos():
 
     return retorno_lista
 
+
+ 
