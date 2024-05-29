@@ -3,6 +3,13 @@ from pydantic import BaseModel
 from typing import Dict
 import pandas as pd
 import re
+import uvicorn
+from entidades.conta import Conta
+from entidades.funcionario import Funcionario
+from entidades.hospede import Hospede
+from entidades.cartao import Cartao
+from entidades.gorjeta import Gorjeta
+from bd_gorjetas.persistencia_bd_gorjetas import create_tables, add_conta, get_conta_by_id
 
 app = FastAPI()
 ag = pd.read_excel('integrate/agencias.xlsx')
@@ -61,4 +68,14 @@ async def relacao_bancos():
     return retorno_lista
 
 
- 
+@app.get('/buscar_conta_por_id/{id}')
+async def buscar_conta(id: int):
+    conta = get_conta_by_id(id)
+    if conta:
+        return conta
+    else:
+        raise HTTPException(status_code=404, detail="Conta não encontrada")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8000)
