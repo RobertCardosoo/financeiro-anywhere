@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from typing import Dict
 import pandas as pd
 import re
+from integrate.bd import *
+import uvicorn
+from integrate.requisicoes_externas import *
 
 app = FastAPI()
 ag = pd.read_excel('integrate/agencias.xlsx')
@@ -61,4 +64,10 @@ async def relacao_bancos():
     return retorno_lista
 
 
- 
+@app.get('/verifica_cartao/{primeiros_oito_dig}')
+async def verificando(primeiros_oito_dig:str):
+    resposta = retorna_cartao(primeiros_oito_dig)
+
+    return {'Bandeira':resposta['brand'],
+            'Banco':resposta['bank']['name']}
+    
